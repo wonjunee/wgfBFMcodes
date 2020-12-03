@@ -1,1 +1,1 @@
-mex -O CFLAGS="\$CFLAGS -std=c++11" ./src/gf.cpp -lfftw3 -I/usr/local/include/ -I/src
+mex -O CFLAGS="\$CFLAGS -std=c++11" ./src/gfBGM.cpp -lfftw3 -I/usr/local/include/ -I/src
