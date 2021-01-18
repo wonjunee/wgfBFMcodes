@@ -8,7 +8,7 @@ nt  = 40;        % The number of outer iterations
 tau = 0.002;     % Time step for JKO scheme
 verbose  = 1;    % print out logs 
 saveData = 1;    % Save the csv data in figures folder
-filename = 'mu';     % Set the filename
+filename = 'data/mu'; % Set the filename
 
 
 [x,y] = meshgrid(linspace(0,1,n));
@@ -54,7 +54,7 @@ saveas(gcf, "./figures/initial-final.png");
 figure(1)
 for i = 0:nt
     subplot(1,1,1);
-    filename_full = sprintf("./data/%s-%d.dat", filename, i);
+    filename_full = sprintf("%s-%04d.dat", filename, i);
     fileId = fopen(filename_full);
     im = fread(fileId,[n n],'double');
     imagesc(im);

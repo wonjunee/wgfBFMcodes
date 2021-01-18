@@ -19,7 +19,8 @@ void create_dat_file(const double* A, int size, string filename, const int n, co
 
     if(saveData == 0) return;
 
-    string filename_tmp= filename + "-" +to_string(n) + ".dat";
+    char filename_tmp[30];
+    sprintf(filename_tmp, "%s-%04d.dat", filename.c_str(), n);
 
     cout << "filename_tmp : " << filename_tmp << "\n";
 
@@ -32,7 +33,6 @@ void create_dat_file(const double* A, int size, string filename, const int n, co
 
     out.write((char *) A, size*sizeof(double));
     out.close();
-    
 }
 
 bool compare_char_string(const char c[], const string& s){
