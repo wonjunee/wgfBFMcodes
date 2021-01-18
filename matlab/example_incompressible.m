@@ -2,12 +2,10 @@
 
 % Parameters
 n = 512;         % The size of the grid
-maxIters = 500;  % Maximum iterations for the Back-and-Forth method
+maxIters = 1000;  % Maximum iterations for the Back-and-Forth method
 TOL = 1e-3;      % Tolerance for the Back-and-Forth method
 nt  = 40;        % The number of outer iterations
-tau = 0.005;     % Time step for JKO scheme
-m   = 4;         % m of internal energy
-gamma = 0.01;    % gamma of internal energy
+tau = 0.002;     % Time step for JKO scheme
 verbose  = 1;    % print out logs 
 saveData = 1;    % Save the csv data in figures folder
 filename = 'mu';     % Set the filename
@@ -19,7 +17,7 @@ filename = 'mu';     % Set the filename
 mu = zeros(n);
 idx = (x-0.25).^2 + (y-0.25).^2 < 0.1^2;
 mu(idx) = 1;
-mu = mu / sum(mu(:)) * n*n;
+% mu = mu / sum(mu(:)) * n*n;
 
 % Define a quadratic potential
 V = 5 * ((x-0.9).^2 + (y-0.9).^2);
@@ -30,7 +28,8 @@ idx = (x-0.5).^2 + (y-0.5).^2 < 0.2^2;
 obstacle(idx) = 1;
 
 % Run BFM!
-result = wgfslow(mu, V, obstacle, maxIters, TOL, nt, tau, m, gamma, verbose, saveData, filename);
+% result = wgfslow(mu, V, obstacle, maxIters, TOL, nt, tau, m, gamma, verbose, saveData, filename);
+result = wgfinc(mu, V, obstacle, maxIters, TOL, nt, tau, verbose, saveData, filename);
 
 
 %% Plot

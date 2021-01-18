@@ -140,12 +140,12 @@ public:
         }
 
         // return infgradphi;
-        return fmax(0.5,sqrt(infgradphi));
+        return fmax(0.1,sqrt(infgradphi));
     }
 
 
     void set_coeff(double& c1, double& c2, const double C, const double mu_max, const double d1, const double d2, const bool verbose, const double C_tr){
-        c1 = 2*C * d1;
+        c1 = 10 * C * d1;
         c2 = C * d1 + C_tr * tau_;
     } 
 
@@ -155,11 +155,11 @@ public:
             else          push_mu_[i] = -LARGE_VALUE;
         }
 
-        flt2d_->find_c_concave(push_mu_, push_mu_, 1);
+        flt2d_->find_c_concave(push_mu_, push_mu_, 0.5);
 
         for(int i=0;i<n1*n2;++i){
             phi_[i] = - mu[i] - helper_f->V_[i];
-            phi_[i] +=  pow(push_mu_[i],0.25);
+            phi_[i] +=  pow(push_mu_[i],0.5);
         }
     }
 
@@ -206,7 +206,7 @@ public:
         C_phi_ = 1;
         C_psi_ = 1;
 
-        initialize_phi(helper_f,mu); // intiailize phi in the first outer iteration
+        if(outer_iter == 0) initialize_phi(helper_f,mu); // intiailize phi in the first outer iteration
 
         double solution_error = 1;
 
