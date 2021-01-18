@@ -20,9 +20,9 @@ void create_dat_file(const double* A, int size, string filename, const int n, co
     if(saveData == 0) return;
 
     char filename_tmp[30];
-    sprintf(filename_tmp, "%s-%04d.dat", filename.c_str(), n);
+    sprintf(filename_tmp, "%s/rho-%04d.dat", filename.c_str(), n);
 
-    cout << "filename_tmp : " << filename_tmp << "\n";
+    // cout << "filename_tmp : " << filename_tmp << "\n";
 
     // save as bin files
     ofstream out(filename_tmp, ios::out | ios::binary);
@@ -42,6 +42,14 @@ bool compare_char_string(const char c[], const string& s){
     return true;
 }
 
+string process_string(char* input_char, int charSize){
+    string result = "";
+    for(int i=0;i<charSize;++i)
+        if(input_char[i] != '\\' && input_char[i] != '/')
+            result += input_char[i];
+    return result;
+}
+
 void check_saveData_input(int saveData, string& filename, char* input_char, const mxArray *prhs[], int charSize, int idx){
     if(saveData != 0 && saveData != 1){
         mexErrMsgTxt("wrong input for saveData.\nsaveData should be one of the following: 1: save the data, 0: don't save the data");
@@ -49,7 +57,8 @@ void check_saveData_input(int saveData, string& filename, char* input_char, cons
 
     if(saveData != 0) mxGetString(prhs[idx], input_char, charSize);
     
-    filename = input_char;
+    filename = process_string(input_char, charSize);
+
     // filename = "./data/" + filename;
 }
 
@@ -72,9 +81,9 @@ void mexFunction( int nlhs, mxArray *plhs[],
     double gamma      = 0;
     int    verbose    = 0;
 
-    verbose = (int) mxGetScalar(prhs[7]);
-    int saveData = (int) mxGetScalar(prhs[8]);
-    check_saveData_input(saveData, filename, input_char, prhs, charSize, 9); 
+    int saveData = 1;
+    check_saveData_input(saveData, filename, input_char, prhs, charSize, 7); 
+    verbose = (int) mxGetScalar(prhs[8]);
 
     int n1=mxGetM(prhs[0]);
     int n2=mxGetN(prhs[0]);

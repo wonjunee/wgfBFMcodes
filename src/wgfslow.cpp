@@ -13,6 +13,7 @@
 #include "BFM.h"
 #include "BFMSlow.h"
 #include "BFMIncomp.h"
+
 using namespace std;
 
 void create_dat_file(const double* A, int size, string filename, const int n, const int saveData){
@@ -22,7 +23,7 @@ void create_dat_file(const double* A, int size, string filename, const int n, co
     char filename_tmp[30];
     sprintf(filename_tmp, "%s/rho-%04d.dat", filename.c_str(), n);
 
-    cout << "filename_tmp : " << filename_tmp << "\n";
+    // cout << "filename_tmp : " << filename_tmp << "\n";
 
     // save as bin files
     ofstream out(filename_tmp, ios::out | ios::binary);
@@ -58,6 +59,7 @@ void check_saveData_input(int saveData, string& filename, char* input_char, cons
     if(saveData != 0) mxGetString(prhs[idx], input_char, charSize);
     
     filename = process_string(input_char, charSize);
+
     // filename = "./data/" + filename;
 }
 
