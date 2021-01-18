@@ -19,7 +19,7 @@ void create_dat_file(const double* A, int size, string filename, const int n, co
 
     if(saveData == 0) return;
 
-    string filename_tmp="./data/" + filename + "-" +to_string(n) + ".dat";
+    string filename_tmp= filename + "-" +to_string(n) + ".dat";
 
     cout << "filename_tmp : " << filename_tmp << "\n";
 
