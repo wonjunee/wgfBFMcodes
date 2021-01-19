@@ -3,9 +3,9 @@
 % Parameters
 n = 512;         % The size of the grid
 maxIters = 200;  % Maximum iterations for the Back-and-Forth method
-TOL = 1e-2;      % Tolerance for the Back-and-Forth method
+TOL = 3e-2;      % Tolerance for the Back-and-Forth method
 nt  = 40;        % The number of outer iterations
-tau = 0.005;     % Time step for JKO scheme
+tau = 0.002;     % Time step for JKO scheme
 m   = 3;         % m of internal energy
 gamma = 0.01;    % gamma of internal energy
 verbose  = 1;    % print out logs 
@@ -20,7 +20,7 @@ mu(idx) = 1;
 mu = mu / sum(mu(:)) * n*n;
 
 % Define a quadratic potential
-V = 1 * (1 + cos(3*pi*x) .* cos(2*pi*y));
+V = 1 * (1 + cos(5*pi*x) .* cos(4*pi*y));
 
 % Define an obstacle
 obstacle = zeros(n);
