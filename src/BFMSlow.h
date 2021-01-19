@@ -33,7 +33,7 @@ public:
     }
 
     void display_iteration(const int iter,const double W2_value,const double error_mu,const double error_nu, const double C_phi, const double C_psi, const double infgradphi) const{
-        printf("%5d \tDual value: %5.4f\tL1 error: %5.4f\n", iter+1, W2_value,  error_mu);
+        printf("%5d \tdual value: %5.6f\tL1 error: %5.4f\n", iter+1, W2_value,  error_mu);
         // printf("%5d C: %5.4f\tc1: %8.4f %8.4f\tc2: %8.4f %8.4f\tdual: %8.4f\tL1 error: %8.4f %8.4f\n", iter+1, C_phi, phi_c1_, psi_c1_, phi_c2_, psi_c2_, W2_value, error_mu, error_nu);
     }
 

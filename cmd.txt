@@ -1,2 +1,0 @@
-mex -O CFLAGS="\$CFLAGS -std=c++11" ./src/wgfslow.cpp -lfftw3 -I/usr/local/include/ -I/src 
-mex -O CFLAGS="\$CFLAGS -std=c++11" ./src/wgfinc.cpp -lfftw3 -I/usr/local/include/ -I/src 

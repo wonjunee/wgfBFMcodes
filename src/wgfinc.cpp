@@ -143,7 +143,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     memcpy(result, mu, n1*n2*sizeof(double));
 
     time=clock()-time;
-    if(verbose>0) printf ("\nCPU time for GF: %f seconds.\n\n",((float)time)/CLOCKS_PER_SEC);
+    if(verbose>0) printf ("\nCPU time for GF: %.1f seconds.\n\n",((float)time)/CLOCKS_PER_SEC);
 
     delete[] input_char;
 }
