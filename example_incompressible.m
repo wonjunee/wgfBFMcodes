@@ -1,75 +1,56 @@
 %% Example of the Back-And-Forth method
+% 
+% For more explanation see also the documentation here:
+% https://wasserstein-gradient-flows.netlify.app/
+% 
 
-% Parameters
-n = 512;         % The size of the grid
-maxIters = 500;  % Maximum iterations for the Back-and-Forth method
-TOL = 3e-2;      % Tolerance for the Back-and-Forth method
-nt  = 80;        % The number of outer iterations
-tau = 0.005;     % Time step for JKO scheme
-verbose  = 1;    % print out logs 
-folder = 'data'; % Set the filename
+
+n = 512;             % The size of the n x n grid
+maxIters = 500;      % Maximum number of BFM iterations
+TOL = 3e-2;          % Tolerance for BFM
+nt  = 80;            % Number of outer iterations
+tau = 0.005;         % Time step in the JKO scheme
+folder = 'data';     % Output directory
+verbose  = 1;        % Print out logs
+
 
 [x,y] = meshgrid(linspace(0,1,n));
 
-% Define initial density
-mu = zeros(n);
-idx = (x-0.25).^2 + (y-0.25).^2 < 0.1^2;
-mu(idx) = 1;
+% Initial density
+rhoInitial = zeros(n);
+idx = (x-0.25).^2 + (y-0.75).^2 < 0.1^2;
+rhoInitial(idx) = 1;
 
-% Define a quadratic potential
-V = 5 * ((x-0.5).^2 + (y-0.5).^2);
+% Potential
+V = 5 * ((x-0.8).^2 + (y-0.2).^2);
 
-% Define an obstacle
+% Add an obstacle
 obstacle = zeros(n);
-idx = (x-0.5).^2 + (y-0.5).^2 < 0.2^2;
+idx = (x-0.5).^2 + (y-0.5).^2 < 0.15^2;
 obstacle(idx) = 1;
 
-% Run BFM!
-result = wgfinc(mu, V, obstacle, maxIters, TOL, nt, tau, folder, verbose);
-
-
-%% Plot
-
-subplot(1,2,1)
-imagesc(mu);
-title("initial density")
-colormap bone
-axis square
-
-hold on
-subplot(1,2,2)
-imagesc(result);
-title("final density")
-colormap bone
-axis square
-hold off
-
-saveas(gcf, "./figures/initial-final.png");
-
+% Plots
 subplot(1,3,1)
-imagesc(mu);
-title("initial density")
-% colormap bone
-axis square
+contourf(x, y, rhoInitial)
+title('Initial density')
+axis('square')
 
-hold on
 subplot(1,3,2)
-imagesc(V);
-title("V")
-% colormap bone
-axis square
+contourf(x, y, V);
+title('Potential V')
+axis('square')
 
-hold on
 subplot(1,3,3)
-imagesc(obstacle);
-title("Obstacle")
-% colormap bone
-axis square
+contourf(x, y, obstacle)
+colormap(gca, 'copper')
+title('Obstacle')
+axis('square')
 
-hold off
+%% Run BFM!
+rhoFinal = wgfinc(rhoInitial, V, obstacle, maxIters, TOL, nt, tau, folder, verbose);
 
-saveas(gcf, "./figures/initial-final.png");
 
+%% Make movie
 
 fig = figure;
 movieName = 'movie.gif';
@@ -77,18 +58,18 @@ movieName = 'movie.gif';
 for i = 0:nt
     file = fopen(sprintf("%s/rho-%04d.dat", folder, i), 'r');
     rho = fread(file, [n n], 'double');
-    imagesc(rho);
-    colormap bone
-    axis square
+    imagesc(rho)
+    axis xy square
     set(gca,'XTickLabel',[], 'YTickLabel',[])
+
     frame = getframe(fig);
     im = frame2im(frame);
     [X,cmap] = rgb2ind(im, 256);
 
     % Write to the GIF file
     if i == 0
-            imwrite(X, cmap, movieName, 'gif', 'DelayTime', 0.000, 'Loopcount', inf);
+        imwrite(X, cmap, movieName, 'gif', 'Loopcount',inf, 'DelayTime',0.001);
     else
-            imwrite(X, cmap, movieName, 'gif', 'DelayTime', 0.000, 'WriteMode', 'append');
+        imwrite(X, cmap, movieName, 'gif', 'WriteMode','append', 'DelayTime',0.001);
     end
 end
