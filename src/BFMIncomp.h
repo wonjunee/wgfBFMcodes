@@ -162,6 +162,8 @@ public:
             phi_[i] = - mu[i] - helper_f->V_[i];
             phi_[i] +=  pow(push_mu_[i],0.5);
         }
+
+        fftps_->solve_heat_equation(phi_, 0.01);
     }
 
     void calculate_d1_d2(double& d1, double& d2, const double lambda, const double infgradphi){
@@ -179,16 +181,14 @@ public:
 
         beta_1_ =0.2;
         beta_2_ =0.8;
-        alpha_1_=1.05;
-        alpha_2_=0.95;
+        alpha_1_=1.01;
+        alpha_2_=0.99;
 
         /* Initialize the tolerance_ based on tau_^2 */
 
         double mu_max = 1;
 
         double tol_modified = tolerance_;
-
-        double mid_tolerance_ = 5e-2;
 
         cout << "Iter : " << outer_iter + 1 << "\n";
 
@@ -207,7 +207,7 @@ public:
         C_phi_ = 1;
         C_psi_ = 1;
 
-        if(outer_iter == 0) initialize_phi(helper_f,mu); // intiailize phi in the first outer iteration
+        if(outer_iter==0) initialize_phi(helper_f,mu); // intiailize phi in the first outer iteration
 
         double solution_error = 1;
 
@@ -224,8 +224,8 @@ public:
 
         for(int iter=0;iter<max_iteration_;++iter){
 
-            double high_thres = 0.1;
-            double low_thres  = 0.05;
+            double high_thres = 0.2;
+            double low_thres  = 0.005;
             C_phi_ = fmin(high_thres, fmax(low_thres, C_phi_ / sigma_forth));
             C_psi_ = fmin(high_thres, fmax(low_thres, C_psi_ / sigma_back));
 
