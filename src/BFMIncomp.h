@@ -206,8 +206,7 @@ public:
 
         C_phi_ = 1;
         C_psi_ = 1;
-
-        if(outer_iter==0) initialize_phi(helper_f,mu); // intiailize phi in the first outer iteration
+initialize_phi(helper_f,mu); // intiailize phi in the first outer iteration
 
         double solution_error = 1;
 
