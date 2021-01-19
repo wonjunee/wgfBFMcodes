@@ -36,7 +36,7 @@ public:
 
         set_M_(mu);
 
-        cout << "M_ : " << M_ << "\n";
+        cout << "The total mass : " << M_ << "\n";
     }
 
     virtual ~Helper_U(){

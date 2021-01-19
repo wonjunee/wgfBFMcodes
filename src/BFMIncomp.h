@@ -109,6 +109,7 @@ public:
 
     void display_iteration(const int iter,const double W2_value_,const double error_mu,const double error_nu,const double solution_error, const double C_phi_, const double C_psi_) const{
         printf("%5d \tdual: %5.4f\tL1 error: %5.4f\n", iter+1, W2_value_,  error_mu);
+        // printf("%5d C: %5.4f\tc1: %8.4f %8.4f\tc2: %8.4f %8.4f\tdual: %8.4f\tL1 error: %8.4f %8.4f\n", iter+1, C_phi_, phi_c1_, psi_c1_, phi_c2_, psi_c2_, W2_value_, error_mu, error_nu);
     }
 
     /**
@@ -140,7 +141,7 @@ public:
         }
 
         // return infgradphi;
-        return fmax(0.1,sqrt(infgradphi));
+        return fmax(1.0,sqrt(infgradphi));
     }
 
 
@@ -189,7 +190,7 @@ public:
 
         double mid_tolerance_ = 5e-2;
 
-        cout << "Iter : " << outer_iter + 1 << " Tolerance : " << tol_modified << "\n";
+        cout << "Iter : " << outer_iter + 1 << "\n";
 
         /* Initialize the coefficients for fftps */
 
@@ -249,13 +250,12 @@ public:
             
             error_mu /= helper_f->M_;
             error_nu /= helper_f->M_;            
-            error=fmax(error_mu,error_nu);
+            error=fmin(error_mu,error_nu);
             
             /* Stopping Condition */
 
             if(((fabs(error ) <tol_modified && abs(error)>0 && iter>=0) || iter==max_iteration_-1) ){
                 display_iteration(iter,W2_value_,error_mu,error_nu,solution_error,C_phi_,C_psi_);
-                cout<<"Tolerance met!"<<endl;
                 cout << flush;
                 break;
             }

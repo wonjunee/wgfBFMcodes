@@ -33,9 +33,6 @@ public:
     }
 
     void display_iteration(const int iter,const double W2_value,const double error_mu,const double error_nu, const double C_phi, const double C_psi, const double infgradphi) const{
-        cout << setprecision(6);
-        cout << fixed;
-        // cout <<setw(5)<<iter+1 << " C : " << C_phi << "  infgradphi : " << infgradphi << "  c1 : " << phi_c1_ << " " << psi_c1_ << " coeff : " << setw(10) << phi_c2_/phi_c1_ << " " << setw(6) << psi_c2_/psi_c1_ << "  W2 : " << scientific << setw(13) << W2_value << "  L1 error : "<<scientific<<setw(13) << error_mu << " " << error_nu<<"\n";
         printf("%5d \tDual value: %5.4f\tL1 error: %5.4f\n", iter+1, W2_value,  error_mu);
         // printf("%5d C: %5.4f\tc1: %8.4f %8.4f\tc2: %8.4f %8.4f\tdual: %8.4f\tL1 error: %8.4f %8.4f\n", iter+1, C_phi, phi_c1_, psi_c1_, phi_c2_, psi_c2_, W2_value, error_mu, error_nu);
     }
