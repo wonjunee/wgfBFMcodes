@@ -16,14 +16,12 @@
 
 using namespace std;
 
-void create_dat_file(const double* A, int size, string filename, const int n, const int saveData){
+void create_dat_file(const double* A, int size, const string& filename, const int n, const int saveData){
 
     if(saveData == 0) return;
 
-    char filename_tmp[30];
+    char filename_tmp[100];
     sprintf(filename_tmp, "%s/rho-%04d.dat", filename.c_str(), n);
-
-    // cout << "filename_tmp : " << filename_tmp << "\n";
 
     // save as bin files
     ofstream out(filename_tmp, ios::out | ios::binary);
@@ -36,33 +34,17 @@ void create_dat_file(const double* A, int size, string filename, const int n, co
     out.close();
 }
 
-bool compare_char_string(const char c[], const string& s){
-    for(int i=0;i<s.length();++i){
-        if(c[i] != s[i]) return false;
-    }
-    return true;
-}
 
+void check_saveData_input(char* input_char, const mxArray *prhs[], int charSize, int idx){
 
-void check_saveData_input(int saveData, char* filename, char* input_char, const mxArray *prhs[], int charSize, int idx){
-    if(saveData != 0 && saveData != 1){
-        mexErrMsgTxt("wrong input for saveData.\nsaveData should be one of the following: 1: save the data, 0: don't save the data");
-    }
-
-    if(saveData != 0) mxGetString(prhs[idx], input_char, charSize);
+    mxGetString(prhs[idx], input_char, charSize);
     
-    // Find the length of the 'folder'
-    int len = 0;
-    for(int i=0;i<charSize;++i){
-        if(input_char[i] == '\0'){
-            len = i;
-            break;
-        }
+    const size_t len = strlen(input_char);
+    if( input_char[len-1] == '\\' || input_char[len-1] == '/' )
+    {
+        // Terminate the string earlier
+        input_char[len-1] = 0;
     }
-
-    filename = input_char;
-
-    if(filename[len-1] == '\\' || filename[len-1] == '/') filename[len-1] = '\0';
 }
 
 
@@ -89,11 +71,12 @@ void mexFunction( int nlhs, mxArray *plhs[],
 
     int    charSize   = 100;
     char*  input_char = new char[charSize];
-    char*  filename   = new char[charSize];
     
     int saveData = 1;
 
-    check_saveData_input(saveData, filename, input_char, prhs, charSize, 9);
+    check_saveData_input(input_char, prhs, charSize, 9);
+
+    string filename = input_char;
 
     int verbose = 0;
     verbose = (int) mxGetScalar(prhs[10]);
