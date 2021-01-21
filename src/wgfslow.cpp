@@ -45,12 +45,8 @@ bool compare_char_string(const char c[], const string& s){
 
 string process_string(char* input_char, int charSize){
     string result = "";
-    for(int i=0;i<charSize;++i)
-        if(i<charSize-1)
-            result += input_char[i];
-        else
-            if(input_char[i] != '\\' && input_char[i] != '/')
-                result += input_char[i];
+    for(int i=0;i<charSize-1;++i) result += input_char[i];
+    if(input_char[charSize-1] != '\\' && input_char[charSize-1] != '/') result += input_char[charSize-1];
     return result;
 }
 
@@ -60,7 +56,7 @@ void check_saveData_input(int saveData, string& filename, char* input_char, cons
     }
 
     if(saveData != 0) mxGetString(prhs[idx], input_char, charSize);
-    
+        
     filename = process_string(input_char, charSize);
 
     // filename = "./data/" + filename;
