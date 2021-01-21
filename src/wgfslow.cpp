@@ -43,23 +43,26 @@ bool compare_char_string(const char c[], const string& s){
     return true;
 }
 
-string process_string(char* input_char, int charSize){
-    string result = "";
-    for(int i=0;i<charSize-1;++i) result += input_char[i];
-    if(input_char[charSize-1] != '\\' && input_char[charSize-1] != '/') result += input_char[charSize-1];
-    return result;
-}
 
-void check_saveData_input(int saveData, string& filename, char* input_char, const mxArray *prhs[], int charSize, int idx){
+void check_saveData_input(int saveData, char* filename, char* input_char, const mxArray *prhs[], int charSize, int idx){
     if(saveData != 0 && saveData != 1){
         mexErrMsgTxt("wrong input for saveData.\nsaveData should be one of the following: 1: save the data, 0: don't save the data");
     }
 
     if(saveData != 0) mxGetString(prhs[idx], input_char, charSize);
-        
-    filename = process_string(input_char, charSize);
+    
+    // Find the length of the 'folder'
+    int len = 0;
+    for(int i=0;i<charSize;++i){
+        if(input_char[i] == '\0'){
+            len = i;
+            break;
+        }
+    }
 
-    // filename = "./data/" + filename;
+    filename = input_char;
+
+    if(filename[len-1] == '\\' || filename[len-1] == '/') filename[len-1] = '\0';
 }
 
 
@@ -86,7 +89,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
 
     int    charSize   = 100;
     char*  input_char = new char[charSize];
-    string filename   = "";
+    char*  filename   = new char[charSize];
     
     int saveData = 1;
 
