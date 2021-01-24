@@ -40,6 +40,9 @@ public:
     void set_coeff_m_2(double& c1, double& c2, const double mu_max, const double C_c_transform){
         c1 = 1/gamma_;
         c2 = C_c_transform * tau_;
+
+        c1 *= 2;
+        c2 *= 2;
     }
 
     void set_coeff(double& c1, double& c2, const double C, const double mu_max, const double d1, const double d2, const double d3, const bool verbose, const double C_c_transform){
@@ -49,16 +52,16 @@ public:
 
     void initialize_phi(Helper_U* helper_f,const double* mu, const int outer_iter){
 
-        for(int i=0;i<n1*n2;++i){
-            if(mu[i] > 0) push_mu_[i] = 0;
-            else          push_mu_[i] = -LARGE_VALUE;
-        }
+        // for(int i=0;i<n1*n2;++i){
+        //     if(mu[i] > 0) push_mu_[i] = 0;
+        //     else          push_mu_[i] = -LARGE_VALUE;
+        // }
 
-        flt2d_->find_c_concave(push_mu_, push_mu_, 1);
+        // flt2d_->find_c_concave(push_mu_, push_mu_, 1);
 
         for(int i=0;i<n1*n2;++i){
             phi_[i] = - gamma_ * mprime_ * pow(mu[i],m_-1) - helper_f->V_[i];
-            phi_[i] +=  pow(push_mu_[i], 0.5);
+            // phi_[i] +=  pow(push_mu_[i], 0.5);
         }
     }
 
@@ -109,12 +112,10 @@ public:
         
         for(int iter = 0; iter < max_iteration_; ++iter){
 
-
             /* Determinant version pushforward */
 
             sigma_forth = 1;
             sigma_back  = 1;
-
 
             if((iter) % 20 == 0 && iter >= 0){
                 if(m_ == 2){
@@ -122,7 +123,7 @@ public:
                     set_coeff_m_2(phi_c1_, phi_c2_, mu_max, C_c_transform);
                 }else{
                     lambda = calculate_lambda(helper_f);
-                    infgradphi = calculate_infgradphi_on_level_set(lambda,helper_f->V_,helper_f->obstacle_,mu);
+                    infgradphi = calculate_infgradphi_on_level_set(lambda,helper_f->V_,helper_f->obstacle_,mu,20);
                     calculate_d1_d2_d3(d1, d2, d3, lambda, infgradphi, helper_f->V_);
                     calculate_trace_theorem_constant(helper_f, lambda, iter, mu);
                     calculate_c_transform_constant(C_c_transform, phi_, mu);
@@ -138,7 +139,7 @@ public:
                     set_coeff_m_2(psi_c1_, psi_c2_, mu_max, C_c_transform);    
                 }else{
                     lambda = calculate_lambda(helper_f);
-                    infgradphi = calculate_infgradphi_on_level_set(lambda,helper_f->V_,helper_f->obstacle_,mu);
+                    infgradphi = calculate_infgradphi_on_level_set(lambda,helper_f->V_,helper_f->obstacle_,mu,20);
                     calculate_d1_d2_d3(d1, d2, d3, lambda, infgradphi, helper_f->V_);
                     calculate_trace_theorem_constant(helper_f, lambda, iter, mu);
                     set_coeff(psi_c1_, psi_c2_, C_psi_, mu_max, d1, d2, d3, false, C_c_transform);    
