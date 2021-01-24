@@ -454,8 +454,7 @@ public:
     }
 
     /* Calculate infgradphi = inf(|nabla phi|) */
-    virtual double calculate_infgradphi_on_level_set(const double lambda, const double* V, const double* obstacle, const double* mu){
-
+    virtual double calculate_infgradphi_on_level_set(const double lambda, const double* V, const double* obstacle, const double* mu, const double thres=20){
         double infgradphi= 10000;
         int count = 0;
         for(int i=0;i<n2-1;++i){
@@ -478,7 +477,7 @@ public:
             }
         }
 
-        return fmax(20,sqrt(infgradphi));
+        return fmax(thres,sqrt(infgradphi));
     }
 
     virtual void calculate_c_transform_constant(double& C, const double* phi, const double* mu){
@@ -513,8 +512,6 @@ public:
                 }
             }
         }
-
-        // double mu_max = 0; for(int i=0;i<n1*n2;++i) mu_max = fmax(mu_max, mu[i]); C *= mu_max;
     }
 
     void sub_function_calculate_trace_constant_matt(double& C_tr1, double& C_tr2, Helper_U* helper_f, const double* push_mu, const double lambda){

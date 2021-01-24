@@ -8,7 +8,7 @@
 % Parameters
 n = 512;             % The size of the n x n grid
 maxIters = 200;      % Maximum number of BFM iterations
-TOL = 1e-2;          % Tolerance for BFM
+TOL = 4e-2;          % Tolerance for BFM
 nt  = 60;            % Number of outer iterations
 tau = 0.005;         % Time step in the JKO scheme
 m   = 2;             % m in the internal energy
@@ -21,15 +21,22 @@ verbose  = 1;        % pPrint out logs
 
 % Initial density
 rhoInitial = zeros(n);
+idx = (x-0.25).^2 + (y-0.25).^2 < 0.1^2;
+rhoInitial(idx) = 1;
+idx = (x-0.75).^2 + (y-0.75).^2 < 0.1^2;
+rhoInitial(idx) = 1;
 idx = (x-0.5).^2 + (y-0.5).^2 < 0.1^2;
 rhoInitial(idx) = 1;
 rhoInitial = rhoInitial / sum(rhoInitial(:)) * n^2;
 
 % Potential
 V = sin(3*pi*x) .* sin(3*pi*y);
+% V = 5 .* ((x-0.9).^2 + (y-0.9).^2);
 
 % No obstacle
 obstacle = zeros(n);
+idx = (x-0.7).^2 + (y-0.7).^2 < 0.15^2;
+obstacle(idx) = 1;
 
 % Plots
 subplot(1,2,1)
@@ -51,10 +58,20 @@ rhoFinal = wgfslow(rhoInitial, V, obstacle, m, gamma, maxIters, TOL, nt, tau, fo
 fig = figure;
 movieName = 'movie.gif';
 
+
+% vmax = 0;
+% for i = 0:nt
+%     file = fopen(sprintf("%s/rho-%04d.dat", folder, i), 'r');
+%     rho = fread(file, [n n], 'double');
+%     vmax = max(vmax, max(max(rho)));
+% end
+
+vmax = vmax/2;
 for i = 0:nt
     file = fopen(sprintf("%s/rho-%04d.dat", folder, i), 'r');
     rho = fread(file, [n n], 'double');
     imagesc(rho)
+%     caxis([0 vmax])
     axis xy square
     set(gca,'XTickLabel',[], 'YTickLabel',[])
 
