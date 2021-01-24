@@ -25,88 +25,6 @@ public:
 
     virtual ~BackAndForthIncompressible() {}
 
-    double calculate_WENO(const double a, const double b, const double c, const double d){
-
-        /* setting constants for WENO. The constants need to satisfy w0 + w1 + w2 = 1 */
-
-        double eps = 1e-6;
-        double IS0 = 13.0 * (a-b)*(a-b) + 3.0 * (a-3*b)*(a-3*b);
-        double IS1 = 13.0 * (b-c)*(b-c) + 3.0 * (b+c)*(b+c);
-        double IS2 = 13.0 * (c-d)*(c-d) + 3.0 * (3*c-d)*(3*c-d);
-        double alpha0 = 1.0/((eps + IS0)*(eps + IS0));
-        double alpha1 = 6.0/((eps + IS1)*(eps + IS1));
-        double alpha2 = 3.0/((eps + IS2)*(eps + IS2));
-        double w0 = alpha0 / (alpha0 + alpha1 + alpha2);
-        double w2 = alpha2 / (alpha0 + alpha1 + alpha2);
-
-        /* return the value */
-        return w0/3.0 * (a - 2.0 * b + c) + (w2 - 0.5)/6.0 * (b - 2.0 * c + d);
-    }
-
-    double calculate_gradx_WENO(const double* phi, const int i, const int j){
-        double phi_j_pre_2  = phi[i*n1+ (int)fmax(0,j-2)];
-        double phi_j_pre_1  = phi[i*n1+ (int)fmax(0,j-1)];
-        double phi_j        = phi[i*n1+j];
-        double phi_j_post_1 = phi[i*n1+ (int)fmin(n1-1,j+1)];
-        double phi_j_post_2 = phi[i*n1+ (int)fmin(n1-1,j+2)];
-        double phi_j_post_3 = phi[i*n1+ (int)fmin(n1-1,j+3)];
-        double eval = n1/12.0 * (
-                                 -         (phi_j_pre_1  - phi_j_pre_2)
-                                 + 7.0  *  (phi_j        - phi_j_pre_1)
-                                 + 7.0  *  (phi_j_post_1 - phi_j)
-                                 -         (phi_j_post_2 - phi_j_post_1)
-                                );
-        double a = n1 * (phi_j_post_3 - 2.0 * phi_j_post_2 + phi_j_post_1);
-        double b = n1 * (phi_j_post_2 - 2.0 * phi_j_post_1 + phi_j);
-        double c = n1 * (phi_j_post_1 - 2.0 * phi_j + phi_j_pre_1);
-        double d = n1 * (phi_j - 2.0 * phi_j_pre_1  + phi_j_pre_2);
-        eval += calculate_WENO(a,b,c,d);
-        return eval;
-    }
-
-    double calculate_grady_WENO(const double* phi, const int i, const int j){
-        double phi_i_pre_2  = phi[(int)fmax(0,i-2)*n1+j];
-        double phi_i_pre_1  = phi[(int)fmax(0,i-1)*n1+j];
-        double phi_i        = phi[i*n1+j];
-        double phi_i_post_1 = phi[(int)fmin(n2-1,i+1)*n1+j];
-        double phi_i_post_2 = phi[(int)fmin(n2-1,i+2)*n1+j];
-        double phi_i_post_3 = phi[(int)fmin(n2-1,i+3)*n1+j];
-        double eval = n2/12.0 * (
-                                 -         (phi_i_pre_1  - phi_i_pre_2)
-                                 + 7.0  *  (phi_i        - phi_i_pre_1)
-                                 + 7.0  *  (phi_i_post_1 - phi_i)
-                                 -         (phi_i_post_2 - phi_i_post_1)
-                                );
-        double a = n2 * (phi_i_post_3 - 2.0 * phi_i_post_2 + phi_i_post_1);
-        double b = n2 * (phi_i_post_2 - 2.0 * phi_i_post_1 + phi_i);
-        double c = n2 * (phi_i_post_1 - 2.0 * phi_i + phi_i_pre_1);
-        double d = n2 * (phi_i - 2.0 * phi_i_pre_1  + phi_i_pre_2);
-        eval += calculate_WENO(a,b,c,d);
-        return eval;
-    }
-
-    double calculate_gradx_WENO_(const double* phi, const int i, const int j){
-        double phi_j_pre_3  = phi[i*n1+ (int)fmax(0,j-3)];
-        double phi_j_pre_2  = phi[i*n1+ (int)fmax(0,j-2)];
-        double phi_j_pre_1  = phi[i*n1+ (int)fmax(0,j-1)];
-        double phi_j        = phi[i*n1+j];
-        double phi_j_post_1 = phi[i*n1+ (int)fmin(n1-1,j+1)];
-        double phi_j_post_2 = phi[i*n1+ (int)fmin(n1-1,j+2)];
-        double eval = n1/12.0 * (
-                                 -         (phi_j_pre_1  - phi_j_pre_2)
-                                 + 7.0  *  (phi_j        - phi_j_pre_1)
-                                 + 7.0  *  (phi_j_post_1 - phi_j)
-                                 -         (phi_j_post_2 - phi_j_post_1)
-                                );
-        double a = n1 * (phi_j_pre_1 - 2.0 * phi_j_pre_2 + phi_j_pre_3);
-        double b = n1 * (phi_j - 2.0 * phi_j_pre_1 + phi_j_pre_2);
-        double c = n1 * (phi_j_post_1 - 2.0 * phi_j + phi_j_pre_1);
-        double d = n1 * (phi_j_post_2 - 2.0 * phi_j_post_1 + phi_j);
-        eval -= calculate_WENO(a,b,c,d);
-        return eval;
-
-    }
-
     void display_iteration(const int iter,const double W2_value_,const double error_mu,const double error_nu,const double solution_error, const double C_phi_, const double C_psi_) const{
         printf("%5d \tdual value: %5.6f\tL1 error: %5.4f\n", iter+1, W2_value_,  error_mu);
         // printf("%5d C: %5.4f\tc1: %8.4f %8.4f\tc2: %8.4f %8.4f\tdual: %8.4f\tL1 error: %8.4f %8.4f\n", iter+1, C_phi_, phi_c1_, psi_c1_, phi_c2_, psi_c2_, W2_value_, error_mu, error_nu);
@@ -204,8 +122,8 @@ public:
 
         double C_tr = 1;
 
-        C_phi_ = 1;
-        C_psi_ = 1;
+        C_phi_ = 0.1;
+        C_psi_ = 0.1;
 initialize_phi(helper_f,mu); // intiailize phi in the first outer iteration
 
         double solution_error = 1;
@@ -224,7 +142,7 @@ initialize_phi(helper_f,mu); // intiailize phi in the first outer iteration
         for(int iter=0;iter<max_iteration_;++iter){
 
             double high_thres = 0.2;
-            double low_thres  = 0.005;
+            double low_thres  = 0.05;
             C_phi_ = fmin(high_thres, fmax(low_thres, C_phi_ / sigma_forth));
             C_psi_ = fmin(high_thres, fmax(low_thres, C_psi_ / sigma_back));
 

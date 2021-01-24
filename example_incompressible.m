@@ -5,10 +5,10 @@
 % 
 
 
-n = 512;             % The size of the n x n grid
+n = 1024;             % The size of the n x n grid
 maxIters = 300;      % Maximum number of BFM iterations
-TOL = 3e-2;          % Tolerance for BFM
-nt  = 180;           % Number of outer iterations
+TOL = 6e-2;          % Tolerance for BFM
+nt  = 150;           % Number of outer iterations
 tau = 0.005;         % Time step in the JKO scheme
 folder = 'data';     % Output directory
 verbose  = 1;        % Print out logs
