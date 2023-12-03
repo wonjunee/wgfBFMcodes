@@ -2,3 +2,6 @@
 
 *.dat
 .DS_store
+*.png
+*.o
+*.so
