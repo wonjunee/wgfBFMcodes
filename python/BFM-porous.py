@@ -52,9 +52,7 @@ def iterate_forward(flt2d, method, push, psi, phi, mu, DUstar, V, kernel, n, tau
     flt2d.find_c_concave(psi, phi, tau)
     flt2d.find_c_concave(phi, psi, tau)
 
-    # bfmgf.calculate_DUstar(DUstar, V, phi, n, n, tau)
     method.calculate_DUstar(DUstar, phi, V, m, mass)
-
     method.compute_push_forth(push, phi, psi, mu)
 
     u = np.zeros((n,n))
@@ -152,9 +150,8 @@ for jj in range(1,21): # total number of outer iterations rho^0, rho^1, ..., rho
 
         error_for_prev = error_for
         error_bac_prev = error_bac
-    DUstar[:] = ((m-1)/m * (-phi-V))**(1/(m-1))
-    DUstar[DUstar < 0] = 0
-    DUstar /= DUstar.mean() / mass
+        
+    method.calculate_DUstar(DUstar, phi, V, m, mass)
     mu[:] = DUstar
 
     # saving figures
