@@ -93,21 +93,22 @@ def iterate_backward(flt2d, method, push, psi, phi, mu, DUstar, V, kernel, n, ta
 # %%
 m = 2.0 # exponent of internal energy
 n = 256 # grid size
-mass = 0.02
-xx, yy = np.meshgrid(np.linspace(0.5/n,1-0.5/n,n),np.linspace(0.5/n,1-0.5/n,n)) # mesh grids
+mass = 0.02 # total mass of the initial density
 tau = 0.1 # outer time step
 
-sigma = 0.05 # inner time step (for the optimization, learning rate)
-theta1 = 1
-theta2 = 0.001
+# setp sizes for the optimization phi <- phi + sigma (theta1 - theta2 \Delta)^{-1} u
+sigma = 0.05    # inner time step (for the optimization, learning rate)
+theta1 = 1      # step size for poisson
+theta2 = 0.001  # step size for poisson
 
+xx, yy = np.meshgrid(np.linspace(0.5/n,1-0.5/n,n),np.linspace(0.5/n,1-0.5/n,n)) # mesh grids
+
+# initial density
 mu = np.zeros((n,n))
 mu[(np.abs(xx-0.3)<0.1) & (np.abs(yy-0.3)<0.1)] = 1
 mu[(np.abs(xx-0.3)<0.1) & (np.abs(yy-0.7)<0.1)] = 1
 mu[(np.abs(xx-0.7)<0.1) & (np.abs(yy-0.3)<0.1)] = 1
 mu /= mu.mean() / mass
-
-print(np.mean(mu))
 
 # define the potential
 V      = ((xx-0.9)**2 + (yy-0.9)**2)/2.0
@@ -121,9 +122,9 @@ V      = V.astype('float64')
 phi    = np.zeros((n,n)).astype('float64')
 psi    = np.zeros((n,n)).astype('float64')
 push   = np.zeros((n,n)).astype('float64')
-
 phi[:] = V
 
+# plotting the initial density
 fig,ax=plt.subplots(1,1)
 ax.contourf(xx,yy,mu,15)
 ax.set_aspect('equal')
