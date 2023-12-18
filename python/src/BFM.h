@@ -242,7 +242,99 @@ public:
         calculate_push_pull_rho(push_mu, mu, vxx_, vyy_, vxy_, phi, 0.2);
     }
 
+    double calculate_F(const double lambda, const double* phi, const double* V, const double constant, const double M, const double mprime){
+        double sum=0;
 
+        for(int i=0;i<n1*n2;++i){
+            double eval= - phi[i] - V[i] + lambda;
+            if(eval>0){
+                sum+=exp((mprime-1)*log(eval)); // IMPORTANT    
+            }    
+        }
+        sum/=constant;
+
+        return sum /(1.0*n1*n2)- M;
+    }
+
+    void calculate_DUstar(
+            py::array_t<double, py::array::c_style | py::array::forcecast> DUstar_np,
+            py::array_t<double, py::array::c_style | py::array::forcecast> phi_np,
+            py::array_t<double, py::array::c_style | py::array::forcecast> V_np,
+            double m, double M){
+        
+        py::buffer_info DUstar_buf = DUstar_np.request();
+        py::buffer_info phi_buf = phi_np.request();
+        py::buffer_info V_buf   = V_np.request();
+        double *DUstar          = static_cast<double *>(DUstar_buf.ptr);
+        double *phi             = static_cast<double *>(phi_buf.ptr);
+        double *V               = static_cast<double *>(V_buf.ptr);
+
+        const double tolerance=1e-4;
+        int max_iteration=20;
+        bool do_bisection = true;
+
+        const double gamma = 1.0;
+
+        double mprime = m/(m-1);
+
+        double lambda_a=-phi[0]-V[0];
+        double lambda_b=-phi[0]-V[0];
+
+        double exponent=1.0/(m-1);
+
+        double gammaprime = pow(gamma * mprime, mprime - 1);
+
+        double lambda = 0;
+        double val_at_0 = calculate_F(lambda,phi,V,gammaprime, M, mprime);
+
+        if(fabs(val_at_0) < M * tolerance){
+            do_bisection = false;
+        }else if(val_at_0 > 0){
+            lambda_b = 0;
+
+            double t = -0.05*M;
+            while(calculate_F(t,phi,V,gammaprime, M, mprime) > 0){
+                t *= 2;
+            }
+            lambda_a = t;
+        }else{
+            lambda_a = 0;
+
+            double t =  0.05*M;
+            while(calculate_F(t,phi,V,gammaprime, M, mprime) < 0){
+                t *= 2;
+            }
+            lambda_b = t;
+        }
+        
+        if(do_bisection){
+            lambda = 0.5 * (lambda_a + lambda_b);
+
+            for(int iter=0;iter<max_iteration;++iter){
+                double val = calculate_F(lambda,phi,V,gammaprime, M, mprime);
+
+                if(fabs(val)<tolerance){
+                    break;
+                }
+
+                if(val==0){
+                    break;
+                }else if(val<0){
+                    lambda_a = lambda;
+                }else{
+                    lambda_b = lambda;
+                }
+
+                lambda = 0.5 * (lambda_a + lambda_b);
+            }
+        }
+
+        for(int i=0;i<n1*n2;++i) phi[i] -= lambda;
+
+        for(int i=0;i<n1*n2;++i){
+            DUstar[i] = 1.0/gammaprime * pow(fmax(0, - phi[i] - V[i]), exponent);
+        }
+    }
 }; // Back and Forth
 
 

@@ -12,7 +12,6 @@
 #include "Pushforward.h"
 #include "Accessory.h"
 #include "FLT.h"
-#include "Helper_U.h"
 #include "BFM.h"
 
 namespace py = pybind11;
@@ -41,9 +40,7 @@ void calculate_gradient(py::array_t<double, py::array::c_style | py::array::forc
     }
 }
 
-
 // --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
-
 
 PYBIND11_MODULE(bfmgf, m) {
     // optional module docstring
@@ -57,8 +54,8 @@ PYBIND11_MODULE(bfmgf, m) {
         .def(py::init<int, int, double> () )
         .def("compute_push_forth", &BFM::compute_push_forth)
         .def("compute_pull_back", &BFM::compute_pull_back)
-        .def("update_sigma", &BFM::update_sigma);
-
-    m.def("calculate_DUstar", &calculate_DUstar);
+        .def("update_sigma", &BFM::update_sigma)
+        .def("calculate_DUstar", &BFM::calculate_DUstar);
     m.def("calculate_gradient", &calculate_gradient);
 }
+
