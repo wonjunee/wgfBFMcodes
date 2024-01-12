@@ -55,6 +55,7 @@ PYBIND11_MODULE(bfmgf, m) {
         .def("compute_push_forth", &BFM::compute_push_forth)
         .def("compute_pull_back", &BFM::compute_pull_back)
         .def("update_sigma", &BFM::update_sigma)
+        .def("calculate_dW", &BFM::calculate_dW)
         .def("calculate_DUstar", &BFM::calculate_DUstar);
     m.def("calculate_gradient", &calculate_gradient);
 }
