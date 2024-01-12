@@ -256,6 +256,48 @@ public:
         return sum /(1.0*n1*n2)- M;
     }
 
+
+    void calculate_dW(py::array_t<double, py::array::c_style | py::array::forcecast> dW_np,
+                      py::array_t<double, py::array::c_style | py::array::forcecast> mu_np){
+
+        py::buffer_info dW_buf = dW_np.request();
+        py::buffer_info mu_buf = mu_np.request();
+        double *dW             = static_cast<double *>(dW_buf.ptr);
+        double *mu             = static_cast<double *>(mu_buf.ptr);
+
+        double m0  = 0;
+        double m1x = 0;
+        double m1y = 0;
+        double m2  = 0;
+
+        for(int i=0;i<n2;++i){
+            for(int j=0;j<n1;++j){
+                double x = (j+0.5)/n1;
+                double y = (i+0.5)/n2;
+                double muval = mu[i*n1+j];
+                m0  += muval;
+                m1x += x*muval;
+                m1y += y*muval;
+                m2  += (x*x + y*y) * muval;
+            }
+        }
+
+        double pcount = 1.0*n1*n2;
+        m0  /= pcount;
+        m1x /= pcount;
+        m1y /= pcount;
+        m2  /= pcount;
+
+        for(int i=0;i<n2;++i){
+            for(int j=0;j<n1;++j){
+                double x = (j+0.5)/n1;
+                double y = (i+0.5)/n2;
+
+                dW[i*n1+j] = (x*x+y*y) * m0 - 2 * (x * m1x + y * m1y) + m2;
+            }
+        }
+    }
+
     void calculate_DUstar(
             py::array_t<double, py::array::c_style | py::array::forcecast> DUstar_np,
             py::array_t<double, py::array::c_style | py::array::forcecast> phi_np,
